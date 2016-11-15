@@ -1,0 +1,165 @@
+<link rel="stylesheet" href="http://auditores.arguilea.net/View/js/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+    $(document).ready(function(){
+		$("#submit_button").click(function(){
+			$("#piechart").empty();
+			$(document).ajaxStart(function(){
+				$("#wait").css("display", "block");
+			});
+			$(document).ajaxComplete(function(){
+				$("#wait").css("display", "none");
+			});
+			var index = document.getElementById('lc_home').selectedIndex;
+			$.lc_home_ = document.getElementsByTagName("option")[index].value;
+			$.start_date_ = document.getElementById('start_date').value;
+			$.finish_date_ = document.getElementById('finish_date').value;
+			//$('.required').html($.lc_home + " Hey dude!");
+			var open_ = 0;
+			var in_progress_ = 0;
+			var realized_ = 0;
+			var matched_ = 0;
+			var other_ = 0;
+			$.getJSON("https://gis-api.aiesec.org/v2/people.json?start_date=" + $.start_date_ + "&end_date=" + $.finish_date_ + "&access_token=e316ebe109dd84ed16734e5161a2d236d0a7e6daf499941f7c110078e3c75493&per_page=10000&filters%5Bcommittee_scope%5D=" + $.lc_home_, function(result) {	
+				$.each(result.data, function(i, field) {
+					var status_var = field.status;
+					if (status_var == 'open')
+						open_++;
+					if (status_var == 'in progress')
+						in_progress_++;
+					if (status_var == 'matched')
+						matched_++;
+					if (status_var == 'realized')
+						realized_++;
+					if (status_var == 'other')
+						other_++;
+				});
+				google.charts.load('current', {'packages':['corechart']});
+				google.charts.setOnLoadCallback(drawChart);
+				function drawChart() {
+					var data = google.visualization.arrayToDataTable([
+						['Status',      'AIESEC for Mexico'],
+						['Open',    	  open_],
+						['In Progress', in_progress_],
+						['Matched',     matched_],
+						['Realized',    realized_],
+						['Other',       other_]
+					]);
+					var options = {title: 'Prototype Rate Leads', width: 700, height: 450};
+					var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+					chart.draw(data, options);
+					//$('.required').html(open_ + " " + in_progress_ + " Hey dude!");
+				}	 
+			});
+		});
+    });
+</script>
+<script>
+    $(function() {
+    		$( "#start_date" ).datepicker({ dateFormat: 'yy-mm-dd' });
+    		$( "#finish_date" ).datepicker({ dateFormat: 'yy-mm-dd'});
+    });
+</script>
+<div class="col-lg-12 col-sm-12 col-xs-12">
+    <div class="regform" id="expa_reg_form" accept-charset="UTF-8" style="background-color: transparent; width:80%; margin-left:10%;">
+        <table class="sighnup-form-table" style="background-color: rgba(10,142,160,0.75);    border-radius: 7px;">
+            <tr style="background: transparent;">
+                <td style="background: transparent;"> </td>
+            </tr>
+            <tr style="background: transparent;/*background: rgba(255,255,255,0.4) !important;*/">
+                <td style="vertical-align: top;padding-top: 15px; padding-right: 2%; width:30%;margin-bottom: 20px; text-align: right;"  class="input-name">
+                    <h6 style="color:#FFF !important;font-weight:normal; display:inline;font-style:inherit;">Fecha de Inicio</h6>
+                    <span class="required" style="color:#FFF !important;">*</span>
+                </td>
+                <td style="width:66%;">
+                    <label  data-toggle="tooltip" style="color:#FFF;" data-placement="top" title="yyyy-MM-dd">
+                    <input  style="margin-bottom: 20px;  border:1px solid #037Ef3; height: 30px; width: 95%;border-radius: 5px;"  id="start_date" class="datepicker" type="text" name="start_date" maxlength="11"
+                        required
+                        oninvalid="this.setCustomValidity('yyyy-MM-dd')"
+                        oninput="setCustomValidity('')"
+                        pattern="d{4}-d{1,2}-d{1,2}">
+                    </label>
+                </td>
+            </tr>
+            <tr style="background: transparent;/*background: rgba(255,255,255,0.4) !important;*/">
+                <td style="vertical-align: top;padding-top: 15px; width:30%;padding-right: 5%;margin-bottom: 20px; text-align: right;"  class="input-name">
+                    <h6 style="color:#FFF !important;font-weight:normal; display:inline;font-style:inherit;">Fecha Final</h6>
+                    <span class="required" style="color:#FFF !important;">*</span>
+                </td>
+                <td style="color:white;"> 
+                    <label  data-toggle="tooltip" style="color:#FFF;" data-placement="top" title="yyyy-MM-dd">
+                    <input  style="margin-bottom: 20px;  border:1px solid #037Ef3; height: 30px; width: 95%;border-radius: 5px;"  id="finish_date" class="datepicker" type="text" name="finish_date" maxlength="11"
+                        required
+                        oninvalid="this.setCustomValidity('yyyy-MM-dd')"
+                        oninput="setCustomValidity('')"
+                        pattern="d{4}-d{1,2}-d{1,2}">
+                    </label>
+                </td>
+            </tr>
+            <tr style="background: transparent;/*background: rgba(255,255,255,0.4) !important;*/">
+                <td style="vertical-align: top;padding-top: 15px; width:30%; padding-right: 5%;margin-bottom: 20px; text-align: right;"  class="input-name">
+                    <h6 style="color:#FFF !important;font-weight:normal; display:inline;font-style:inherit;">Comité</h6>
+                    <span class="required" style="color:#FFF !important;">*</span>
+                </td>
+                <td>
+                    <select id="lc_home" name="lc_home" title="Commmittee"  style="border:1px solid #037Ef3; width: 95%;margin-right: 5px; display: inline;border-radius: 5px; margin-bottom: 20px;">
+                        <option value="0" disabled>Elige una Oficina Local</option>
+                        <option value="207">Aguascalientes</option>
+                        <option value="2062">Celaya</option>
+                        <option value="208">Chihuahua</option>
+                        <option value="1168">Ciudad Juárez</option>
+                        <option value="1891">Cuernavaca</option>
+                        <option value="67">Expansiones MX</option>
+                        <option value="1374">Guadalajara</option>
+                        <option value="940">Guanajuato</option>
+                        <option value="1671">Hermosillo</option>
+                        <option value="1054">IPN</option>
+                        <option value="2063">Irapuato</option>
+                        <option value="874">ITAM</option>
+                        <option value="1077">ITESM CEM</option>
+                        <option value="1269">ITESM Monterrey</option>
+                        <option value="119">ITESM Santa Fe</option>
+                        <option value="1790">ITESM Toluca</option>
+                        <option value="1672">La Laguna</option>
+                        <option value="866">León</option>
+                        <option value="63">Mérida</option>
+                        <option value="1866">Oaxaca</option>
+                        <option value="911">Puebla</option>
+                        <option value="1287">Querétaro</option>
+                        <option value="552">Sinaloa</option>
+                        <option value="69">Tabasco</option>
+                        <option value="1865">Tampico</option>
+                        <option value="68">UAEMEX</option>
+                        <option value="1673">UDEM</option>
+                        <option value="1193">ULSA</option>
+                        <option value="724">UNAM</option>
+                        <option value="240">UP</option>
+                        <option value="550">Veracruz</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <div id="error" class="error" style="display:none;">
+            <p></p>
+        </div>
+        <div id="submit" style="padding:0px;background: transparent;text-align:center;">
+            <input type="button" id="submit_button" name="submit" clicked="false" class="send" value="Submit" style="width: 50%; margin: 6px 0px; padding: 16px; background: #037ff3;border-radius: 5px;">
+        </div>
+        <div id="wait" style="display:none;width:500px;height:500px;border:0px solid black;position:absolute;top:50%;left:20%;padding:2px;">
+            <img src='http://i.giphy.com/o5oLImoQgGsKY.gif' width="500" height="500"/>
+            <h6 style="color:#FFF !important;font-weight:normal; display:inline;font-style:inherit;">Wait Cookie Monster, We Are Working On It!</h6>
+        </div>
+        <tr style="background: transparent;">
+            <div id="piechart" style="width: 700px; height: 450px; background: transparent;"></div>
+        </tr>
+        <div id = "stage" style = "background-color:#fff;">
+        </div>
+    </div>
+</div>
